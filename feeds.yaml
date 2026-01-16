@@ -32,3 +32,13 @@ feeds:
     url: "https://fetchrss.com/feed/1vcaujD2G3c21vcd2xFDTBzm.rss"
     category: "Local News"
     enabled: true
+
+  - name: "Union County News Feed 7"
+    url: "https://fetchrss.com/feed/1vcaujD2G3c21vgZj0Cx18ri.rss"
+    category: "Local News"
+    enabled: true
+
+  - name: "Union County News Feed 8"
+    url: "https://fetchrss.com/feed/1vcaujD2G3c21vgZk4BRo7Yh.rss"
+    category: "Local News"
+    enabled: true
