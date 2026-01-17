@@ -48,7 +48,7 @@ class AppSettings(BaseSettings):
 
     # OpenAI
     openai_api_key: str = Field(..., description="OpenAI API key")
-    openai_model: str = Field(default="gpt-4.1-nano", description="OpenAI model to use")
+    openai_model: str = Field(default="gpt-5-mini", description="OpenAI model to use")
 
     # WordPress
     wordpress_base_url: str = Field(..., description="WordPress site URL")

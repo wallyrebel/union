@@ -50,18 +50,21 @@ class OpenAIRewriter:
     def __init__(
         self,
         api_key: str,
-        model: str = "gpt-4.1-nano",
+        model: str = "gpt-5-mini",
+        fallback_model: str = "gpt-4.1-nano",
         max_tokens: int = 2000,
     ):
         """Initialize OpenAI rewriter.
 
         Args:
             api_key: OpenAI API key.
-            model: Model to use (default: gpt-4.1-nano).
+            model: Primary model to use (default: gpt-5-mini).
+            fallback_model: Fallback model if primary fails (default: gpt-4.1-nano).
             max_tokens: Maximum tokens in response.
         """
         self.client = OpenAI(api_key=api_key)
         self.model = model
+        self.fallback_model = fallback_model
         self.max_tokens = max_tokens
         self._last_request_time = 0.0
 
@@ -118,52 +121,94 @@ ORIGINAL CONTENT:
 
 Remember to respond with valid JSON containing headline, excerpt, and body."""
 
-        try:
-            # Build API params - use max_completion_tokens for newer models
-            api_params = {
-                "model": self.model,
-                "messages": [
-                    {"role": "system", "content": AP_STYLE_PROMPT},
-                    {"role": "user", "content": user_prompt},
-                ],
-                "temperature": 0.7,
-            }
-            
-            # Newer models (gpt-4.1, gpt-4o, etc.) use max_completion_tokens
-            # Older models use max_tokens
-            if any(x in self.model.lower() for x in ["4.1", "4o", "o1", "o3", "o4"]):
-                api_params["max_completion_tokens"] = self.max_tokens
-            else:
-                api_params["max_tokens"] = self.max_tokens
-            
-            # Only add response_format for models that support it
-            if "o1" not in self.model.lower():
-                api_params["response_format"] = {"type": "json_object"}
-            
-            response = self.client.chat.completions.create(**api_params)
+        # Try primary model first, then fallback
+        models_to_try = [self.model]
+        if self.fallback_model and self.fallback_model != self.model:
+            models_to_try.append(self.fallback_model)
 
-            # Parse response
-            response_text = response.choices[0].message.content
-            result = self._parse_response(response_text)
-
-            if result:
-                # Override headline if requested
-                if use_original_title:
-                    result["headline"] = original_title
-
-                logger.info(
-                    "rewrite_complete",
-                    headline=result["headline"][:50],
-                    body_length=len(result["body"]),
+        last_error = None
+        for current_model in models_to_try:
+            try:
+                result = self._call_openai(
+                    current_model, user_prompt, original_title, use_original_title
                 )
+                if result:
+                    return result
+            except Exception as e:
+                last_error = e
+                logger.warning(
+                    "model_failed_trying_fallback",
+                    model=current_model,
+                    error=str(e),
+                    has_fallback=current_model != models_to_try[-1],
+                )
+                continue
 
-                return result
+        if last_error:
+            logger.error("openai_rewrite_error", error=str(last_error))
+        return None
 
-            return None
+    def _call_openai(
+        self,
+        model: str,
+        user_prompt: str,
+        original_title: str,
+        use_original_title: bool,
+    ) -> Optional[dict]:
+        """Make the actual OpenAI API call.
 
-        except Exception as e:
-            logger.error("openai_rewrite_error", error=str(e))
-            return None
+        Args:
+            model: Model to use for this call.
+            user_prompt: The user prompt to send.
+            original_title: Original article title.
+            use_original_title: If True, keep the original title.
+
+        Returns:
+            Dictionary with headline, excerpt, body or None on failure.
+        """
+        # Build API params - use max_completion_tokens for newer models
+        api_params = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": AP_STYLE_PROMPT},
+                {"role": "user", "content": user_prompt},
+            ],
+            "temperature": 0.7,
+        }
+
+        # Newer models (gpt-4.1, gpt-4o, gpt-5, etc.) use max_completion_tokens
+        # Older models use max_tokens
+        if any(x in model.lower() for x in ["4.1", "4o", "5", "o1", "o3", "o4"]):
+            api_params["max_completion_tokens"] = self.max_tokens
+        else:
+            api_params["max_tokens"] = self.max_tokens
+
+        # Only add response_format for models that support it
+        if "o1" not in model.lower():
+            api_params["response_format"] = {"type": "json_object"}
+
+        logger.info("calling_openai", model=model)
+        response = self.client.chat.completions.create(**api_params)
+
+        # Parse response
+        response_text = response.choices[0].message.content
+        result = self._parse_response(response_text)
+
+        if result:
+            # Override headline if requested
+            if use_original_title:
+                result["headline"] = original_title
+
+            logger.info(
+                "rewrite_complete",
+                model=model,
+                headline=result["headline"][:50],
+                body_length=len(result["body"]),
+            )
+
+            return result
+
+        return None
 
     def _parse_response(self, response_text: str) -> Optional[dict]:
         """Parse the JSON response from OpenAI.
@@ -252,7 +297,8 @@ def rewrite_with_openai(
     content: str,
     original_title: str,
     api_key: str,
-    model: str = "gpt-4.1-nano",
+    model: str = "gpt-5-mini",
+    fallback_model: str = "gpt-4.1-nano",
     use_original_title: bool = False,
 ) -> Optional[dict]:
     """Convenience function to rewrite content.
@@ -261,11 +307,12 @@ def rewrite_with_openai(
         content: Original article content.
         original_title: Original title.
         api_key: OpenAI API key.
-        model: Model to use.
+        model: Primary model to use.
+        fallback_model: Fallback model if primary fails.
         use_original_title: Keep original title if True.
 
     Returns:
         Dictionary with headline, excerpt, body or None.
     """
-    rewriter = OpenAIRewriter(api_key=api_key, model=model)
+    rewriter = OpenAIRewriter(api_key=api_key, model=model, fallback_model=fallback_model)
     return rewriter.rewrite(content, original_title, use_original_title)
