@@ -27,6 +27,7 @@ from rss_to_wp.feeds import (
 )
 from rss_to_wp.images import download_image, find_fallback_image, find_rss_image
 from rss_to_wp.rewriter import OpenAIRewriter
+from rss_to_wp.source_content import MIN_SOURCE_LENGTH, clean_source_content
 from rss_to_wp.storage import DedupeStore
 from rss_to_wp.utils import get_logger, setup_logging, send_email_notification, build_summary_email
 from rss_to_wp.wordpress import WordPressClient
@@ -277,6 +278,21 @@ def process_feed(
                     "entry_skipped_duplicate",
                     key=entry_key,
                     title=get_entry_title(entry)[:50],
+                )
+                skipped += 1
+                continue
+
+            # Match the rewriter's existing guard without conflating missing source
+            # text with a generation failure. Do not mark the GUID as processed:
+            # the same item may gain a usable caption on a later feed fetch.
+            source_length = len(clean_source_content(get_entry_content(entry)))
+            if source_length < MIN_SOURCE_LENGTH:
+                logger.info(
+                    "entry_skipped_insufficient_content",
+                    key=entry_key,
+                    title=get_entry_title(entry)[:50],
+                    length=source_length,
+                    minimum_length=MIN_SOURCE_LENGTH,
                 )
                 skipped += 1
                 continue

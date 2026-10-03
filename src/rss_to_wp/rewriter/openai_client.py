@@ -9,6 +9,7 @@ from typing import Optional
 
 from openai import OpenAI
 
+from rss_to_wp.source_content import MIN_SOURCE_LENGTH, clean_source_content
 from rss_to_wp.utils import get_logger
 
 logger = get_logger("rewriter.openai")
@@ -97,7 +98,7 @@ class OpenAIRewriter:
         # Clean HTML from content for better processing
         clean_content = self._strip_html(content)
 
-        if not clean_content or len(clean_content) < 50:
+        if not clean_content or len(clean_content) < MIN_SOURCE_LENGTH:
             logger.warning("content_too_short", length=len(clean_content))
             return None
 
@@ -268,29 +269,7 @@ Remember to respond with valid JSON containing headline, excerpt, and body."""
         Returns:
             Plain text content.
         """
-        from bs4 import BeautifulSoup
-
-        try:
-            soup = BeautifulSoup(html, "html.parser")
-
-            # Remove script and style elements
-            for element in soup(["script", "style", "nav", "footer", "header"]):
-                element.decompose()
-
-            # Get text
-            text = soup.get_text(separator=" ")
-
-            # Clean up whitespace
-            text = re.sub(r"\s+", " ", text)
-            text = text.strip()
-
-            return text
-
-        except Exception:
-            # Fallback: simple regex
-            text = re.sub(r"<[^>]+>", " ", html)
-            text = re.sub(r"\s+", " ", text)
-            return text.strip()
+        return clean_source_content(html)
 
 
 def rewrite_with_openai(

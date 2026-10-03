@@ -211,6 +211,15 @@ sudo systemctl start rss-to-wp.timer
 └── README.md
 ```
 
+## Insufficient source text
+
+Entries with fewer than 50 characters of visible body text (including empty or
+photo-only items) are counted as skips before rewriting. This preserves the
+existing minimum-content guard. Skips never mark the entry GUID or URL as
+processed: each fetch checks the current text, so an item that later gains a
+caption can be processed while it remains within the configured time window.
+Generation, API and WordPress failures still count as errors.
+
 ## Troubleshooting
 
 ### Common Issues
