@@ -1,4 +1,4 @@
-"""Authorized status-only withdrawal, locked to the verified Union placeholder."""
+"""Audit the completed, exact-post withdrawal. The executable is read-only."""
 
 import hashlib
 import json
@@ -74,6 +74,7 @@ def withdraw(base, session, public_get=requests.get):
     if public.status_code not in (401, 403, 404) or public.json().get("code") not in (
         "rest_post_invalid_id",
         "rest_cannot_read",
+        "rest_forbidden",
     ):
         raise ValueError("Post remains accessible through public REST")
     page = public_get(LINK, timeout=(10, 30), allow_redirects=False)
@@ -93,6 +94,45 @@ def withdraw(base, session, public_get=requests.get):
     }
 
 
+def verify_withdrawal(base, session, public_get=requests.get):
+    """Read-back only; never repeat the one-shot status write."""
+    if base.rstrip("/") != BASE:
+        raise ValueError("Unexpected WordPress host")
+    endpoint = BASE + f"/wp-json/wp/v2/posts/{POST_ID}"
+    post = _read(session, endpoint)
+    if (
+        post["id"] != POST_ID
+        or post["status"] != "draft"
+        or post["slug"] != SLUG
+        or post["title"]["raw"] != TITLE
+        or post["featured_media"] != 4569
+        or _digest(post["content"]["rendered"]) != BODY_SHA256
+    ):
+        raise ValueError("Draft identity or unchanged body/media verification failed")
+    public = public_get(endpoint, timeout=(10, 30), allow_redirects=False)
+    if public.status_code not in (401, 403, 404) or public.json().get("code") not in (
+        "rest_post_invalid_id",
+        "rest_cannot_read",
+        "rest_forbidden",
+    ):
+        raise ValueError("Post remains accessible through public REST")
+    page = public_get(LINK, timeout=(10, 30), allow_redirects=False)
+    if page.status_code not in (404, 410):
+        raise ValueError("Public permalink remains accessible")
+    return {
+        "post_id": POST_ID,
+        "url": LINK,
+        "status": post["status"],
+        "read_only": True,
+        "rendered_body_sha256": _digest(post["content"]["rendered"]),
+        "featured_media": post["featured_media"],
+        "public_rest_status": public.status_code,
+        "public_rest_code": public.json().get("code"),
+        "public_permalink_status": page.status_code,
+        "verified": True,
+    }
+
+
 def main():
     report_path = Path("data/post4570-withdrawal.json")
     report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -102,7 +142,7 @@ def main():
                 os.environ["WORDPRESS_USERNAME"],
                 os.environ["WORDPRESS_APP_PASSWORD"],
             )
-            report = withdraw(os.environ["WORDPRESS_BASE_URL"], session)
+            report = verify_withdrawal(os.environ["WORDPRESS_BASE_URL"], session)
     except Exception as exc:
         # Error type only: never print request details, response bodies or auth.
         report = {"post_id": POST_ID, "verified": False, "error_type": type(exc).__name__}

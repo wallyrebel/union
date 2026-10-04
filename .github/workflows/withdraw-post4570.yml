@@ -1,4 +1,4 @@
-name: Withdraw verified placeholder post 4570
+name: Verify withdrawn placeholder post 4570 (read-only)
 on:
   workflow_dispatch:
   push:
@@ -14,7 +14,7 @@ jobs:
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'workflow_dispatch' ||
-       github.event.head_commit.message == 'Withdraw verified Union placeholder post 4570')
+       github.event.head_commit.message == 'Verify Union post 4570 withdrawal without writes')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -24,7 +24,7 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install requests pytest
       - run: python -m pytest tests/test_post4570_withdrawal.py -q
-      - name: Move exact verified placeholder to draft using existing REST credentials
+      - name: Verify exact draft status and public withdrawal without writes
         env:
           WORDPRESS_BASE_URL: ${{ secrets.WORDPRESS_BASE_URL }}
           WORDPRESS_USERNAME: ${{ secrets.WORDPRESS_USERNAME }}

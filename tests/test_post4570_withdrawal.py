@@ -142,3 +142,43 @@ def test_cached_live_permalink_is_reported_as_unverified(route):
     with pytest.raises(ValueError):
         job.withdraw(job.BASE, session, public)
     session.post.assert_called_once()
+
+
+def test_site_specific_rest_forbidden_still_requires_authenticated_draft(route):
+    _, after, session, public = route
+    session.get.side_effect = [response(after)]
+    public.side_effect = [response({"code": "rest_forbidden"}, 401), response(status=404)]
+    report = job.verify_withdrawal(job.BASE, session, public)
+    assert report["verified"] and report["read_only"]
+    assert report["status"] == "draft" and report["featured_media"] == 4569
+    assert report["rendered_body_sha256"] == job.BODY_SHA256
+    session.post.assert_not_called()
+
+
+def test_read_only_verification_never_attempts_to_withdraw_published_post(route):
+    before, _, session, public = route
+    session.get.side_effect = [response(before)]
+    with pytest.raises(ValueError):
+        job.verify_withdrawal(job.BASE, session, public)
+    session.post.assert_not_called()
+    public.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("id", 1),
+        ("slug", "real-news"),
+        ("title", {"raw": "Real news"}),
+        ("featured_media", 0),
+        ("content", {"rendered": "Edited"}),
+    ],
+)
+def test_read_only_verification_rejects_changed_identity_content_media(route, field, value):
+    _, after, session, public = route
+    after[field] = value
+    session.get.side_effect = [response(after)]
+    with pytest.raises(ValueError):
+        job.verify_withdrawal(job.BASE, session, public)
+    session.post.assert_not_called()
+    public.assert_not_called()

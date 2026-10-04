@@ -220,6 +220,18 @@ processed: each fetch checks the current text, so an item that later gains a
 caption can be processed while it remains within the configured time window.
 Generation, API and WordPress failures still count as errors.
 
+Known platform unavailable, login and error notices are also retryable source
+skips, even when their text exceeds 50 characters. Checks match interface
+headings and specific notices; articles reporting on privacy, login changes or
+outages remain eligible. Rewritten headlines and bodies must contain visible
+text and pass the placeholder check before image or WordPress work. Invalid
+output counts as a generation error and remains unprocessed. Output has no
+minimum length, so a valid concise rewrite can publish.
+
+The exact placeholder post 4570 was moved to draft with a single status-only
+request. Its dedicated workflow and script now perform read-only verification
+of that draft, the unchanged rendered body and media, and public inaccessibility.
+
 ## Troubleshooting
 
 ### Common Issues
