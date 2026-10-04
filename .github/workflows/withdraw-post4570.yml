@@ -1,0 +1,38 @@
+name: Withdraw verified placeholder post 4570
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [scripts/withdraw_post4570.py]
+permissions:
+  contents: read
+concurrency:
+  group: union-post4570-withdrawal
+  cancel-in-progress: false
+jobs:
+  withdraw:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.head_commit.message == 'Withdraw verified Union placeholder post 4570')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install requests pytest
+      - run: python -m pytest tests/test_post4570_withdrawal.py -q
+      - name: Move exact verified placeholder to draft using existing REST credentials
+        env:
+          WORDPRESS_BASE_URL: ${{ secrets.WORDPRESS_BASE_URL }}
+          WORDPRESS_USERNAME: ${{ secrets.WORDPRESS_USERNAME }}
+          WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
+        run: python scripts/withdraw_post4570.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: post4570-withdrawal-verification
+          path: data/post4570-withdrawal.json
+          retention-days: 14
