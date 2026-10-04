@@ -128,3 +128,141 @@ def test_rewriter_and_preflight_share_normalization(monkeypatch):
     if fallback and fallback != editor.model:
         expected_models.append(fallback)
     assert [call.kwargs["model"] for call in api.call_args_list] == expected_models
+
+
+# Exact source that published post 4570 on October 4 despite the 50-char guard.
+FACEBOOK_TITLE = "This content isn't available right now"
+FACEBOOK_NOTICE = (
+    "When this happens, it's usually because the owner only shared it with a small "
+    "group of people, changed who can see it or it's been deleted."
+)
+
+
+@pytest.mark.parametrize(
+    "title,content",
+    [
+        (FACEBOOK_TITLE, FACEBOOK_NOTICE),
+        ("A post from New Albany Fire/Rescue", FACEBOOK_NOTICE),
+        ("THIS CONTENT ISN’T AVAILABLE RIGHT NOW", "<p>" + FACEBOOK_NOTICE + "</p>"),
+        ("Source headline", "<h1>" + FACEBOOK_TITLE + "</h1><p>" + FACEBOOK_NOTICE + "</p>"),
+        ("Log in to Facebook", "Log in to Facebook to view this post and continue browsing."),
+        (
+            "Facebook – log in or sign up",
+            "Log in to Facebook to view this post and continue browsing.",
+        ),
+        ("Source headline", "<h1>Something went wrong</h1><p>Please try again later.</p>"),
+        (
+            "Source headline",
+            "<h1>Sorry, this page isn't available</h1><p>The link you followed may be broken, or the page may have been removed.</p>",
+        ),
+        ("Access denied", "Access to this page was denied. Please contact the site administrator."),
+        ("503 Service Unavailable", "<h1>Service unavailable</h1><p>Please try again later.</p>"),
+    ],
+)
+def test_platform_source_is_retryable_skip_before_all_external_work(pipeline, title, content):
+    assert pipeline.run(content, title=title) == (0, 1, 0)
+    assert pipeline.run(content, title=title) == (0, 1, 0)
+    pipeline.editor.rewrite.assert_not_called()
+    cli.find_rss_image.assert_not_called()
+    assert pipeline.wp.mock_calls == []
+    assert pipeline.store.get_processed_count() == 0
+    assert pipeline.logger.info.call_args[0] == ("entry_skipped_platform_placeholder",)
+
+
+def test_confirmed_placeholder_can_gain_real_news_then_publish_once(pipeline):
+    assert len(FACEBOOK_NOTICE) == 139
+    assert pipeline.run(FACEBOOK_NOTICE, title=FACEBOOK_TITLE) == (0, 1, 0)
+    assert pipeline.run(
+        "City Hall will close Monday for the federal holiday.", title="City Hall closure"
+    ) == (1, 0, 0)
+    assert pipeline.run(
+        "City Hall will close Monday for the federal holiday.", title="City Hall closure"
+    ) == (0, 1, 0)
+
+
+@pytest.mark.parametrize(
+    "title,content",
+    [
+        (
+            "Facebook privacy changes discussed at school board meeting",
+            "School officials explained Facebook privacy settings and deletion rules during Tuesday's meeting.",
+        ),
+        (
+            "Residents report Facebook outage",
+            "Residents saw 'This content isn't available right now' during an outage Friday. The city kept alerts on its website.",
+        ),
+        (
+            "County updates online portal",
+            "Residents must log in to view tax records on the county's new website, officials said Monday.",
+        ),
+        (
+            "City restores public records",
+            "'This content isn't available right now' appeared on the city's page. Officials restored the records Friday.",
+        ),
+        ("City Hall closure", "City Hall will close Monday for the federal holiday."),
+    ],
+)
+def test_real_short_news_and_reporting_on_platform_errors_still_publish(pipeline, title, content):
+    assert pipeline.run(content, title=title) == (1, 0, 0)
+    pipeline.editor.rewrite.assert_called_once()
+    pipeline.wp.create_post.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "rewritten",
+    [
+        {"headline": "Headline", "body": ""},
+        {"headline": "Headline", "body": "<p>&nbsp;</p><img src='photo.jpg'>"},
+        {"headline": "<br>", "body": "<p>A real short story.</p>"},
+        {"headline": "Headline", "body": None},
+        {"body": "<p>A real short story.</p>"},
+        ["headline", "body"],
+        {"headline": FACEBOOK_TITLE, "body": FACEBOOK_NOTICE},
+        {
+            "headline": "Content Unavailable Due to Privacy Settings or Deletion",
+            "body": "<p>The Facebook content cannot be viewed because the owner changed its privacy settings or deleted the post.</p>",
+        },
+        {"headline": "Source update", "body": "<p>" + FACEBOOK_NOTICE + "</p>"},
+    ],
+)
+def test_invalid_rewrite_is_error_before_images_wp_or_dedupe(pipeline, rewritten):
+    pipeline.editor.rewrite.return_value = rewritten
+    assert pipeline.run(
+        "County officials reopened Main Street after completing bridge repairs today."
+    ) == (0, 0, 1)
+    cli.find_rss_image.assert_not_called()
+    assert pipeline.wp.mock_calls == []
+    assert pipeline.store.get_processed_count() == 0
+
+
+def test_direct_entry_caller_cannot_rewrite_platform_source(pipeline):
+    entry = {"title": FACEBOOK_TITLE, "summary": FACEBOOK_NOTICE}
+    assert (
+        cli.process_entry(
+            entry,
+            pipeline.feed,
+            SimpleNamespace(),
+            pipeline.editor,
+            pipeline.wp,
+            False,
+            pipeline.logger,
+        )
+        is None
+    )
+    pipeline.editor.rewrite.assert_not_called()
+    assert pipeline.wp.mock_calls == []
+
+
+def test_dry_run_also_rejects_invalid_output(pipeline):
+    pipeline.editor.rewrite.return_value = {"headline": "Headline", "body": "<p>&nbsp;</p>"}
+    entry = {
+        "title": "News",
+        "summary": "County officials reopened Main Street after completing bridge repairs today.",
+    }
+    assert (
+        cli.process_entry(
+            entry, pipeline.feed, SimpleNamespace(), pipeline.editor, None, True, pipeline.logger
+        )
+        is None
+    )
+    cli.find_rss_image.assert_not_called()

@@ -27,7 +27,12 @@ from rss_to_wp.feeds import (
 )
 from rss_to_wp.images import download_image, find_fallback_image, find_rss_image
 from rss_to_wp.rewriter import OpenAIRewriter
-from rss_to_wp.source_content import MIN_SOURCE_LENGTH, clean_source_content
+from rss_to_wp.source_content import (
+    MIN_SOURCE_LENGTH,
+    clean_source_content,
+    platform_placeholder_reason,
+    publication_content_problem,
+)
 from rss_to_wp.storage import DedupeStore
 from rss_to_wp.utils import get_logger, setup_logging, send_email_notification, build_summary_email
 from rss_to_wp.wordpress import WordPressClient
@@ -282,6 +287,14 @@ def process_feed(
                 skipped += 1
                 continue
 
+            placeholder = platform_placeholder_reason(
+                get_entry_title(entry), get_entry_content(entry)
+            )
+            if placeholder:
+                logger.info("entry_skipped_platform_placeholder", key=entry_key, reason=placeholder)
+                skipped += 1
+                continue
+
             # Match the rewriter's existing guard without conflating missing source
             # text with a generation failure. Do not mark the GUID as processed:
             # the same item may gain a usable caption on a later feed fetch.
@@ -365,6 +378,13 @@ def process_entry(
 
     logger.info("processing_entry", title=title[:50])
 
+    # Also protect callers that invoke process_entry without process_feed.
+    if len(clean_source_content(content)) < MIN_SOURCE_LENGTH or platform_placeholder_reason(
+        title, content
+    ):
+        logger.info("entry_source_rejected", title=title[:50])
+        return None
+
     # Rewrite with OpenAI
     rewritten = rewriter.rewrite(
         content=content,
@@ -374,6 +394,15 @@ def process_entry(
 
     if not rewritten:
         logger.error("rewrite_failed", title=title[:50])
+        return None
+
+    problem = (
+        publication_content_problem(rewritten.get("headline"), rewritten.get("body"))
+        if isinstance(rewritten, dict)
+        else "invalid_output_fields"
+    )
+    if problem:
+        logger.error("rewrite_content_rejected", reason=problem)
         return None
 
     # Find image

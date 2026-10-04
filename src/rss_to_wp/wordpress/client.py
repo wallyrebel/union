@@ -9,6 +9,7 @@ from urllib.parse import quote
 
 import requests
 
+from rss_to_wp.source_content import publication_content_problem
 from rss_to_wp.utils import get_logger
 from rss_to_wp.wordpress.media import wp_upload_media
 
@@ -335,6 +336,12 @@ class WordPressClient:
         Returns:
             Created post data or None.
         """
+        # Validate before duplicate reads or source attribution can hide empty text.
+        problem = publication_content_problem(title, content)
+        if problem:
+            logger.warning("post_content_rejected", reason=problem)
+            return None
+
         # PRIMARY CHECK: Check for duplicate by source URL (most reliable - URL never changes)
         if source_url and self.check_duplicate_by_source_url(source_url):
             logger.warning(

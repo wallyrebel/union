@@ -9,7 +9,12 @@ from typing import Optional
 
 from openai import OpenAI
 
-from rss_to_wp.source_content import MIN_SOURCE_LENGTH, clean_source_content
+from rss_to_wp.source_content import (
+    MIN_SOURCE_LENGTH,
+    clean_source_content,
+    platform_placeholder_reason,
+    publication_content_problem,
+)
 from rss_to_wp.utils import get_logger
 
 logger = get_logger("rewriter.openai")
@@ -93,14 +98,19 @@ class OpenAIRewriter:
         Returns:
             Dictionary with headline, excerpt, body or None on failure.
         """
-        self._rate_limit()
-
         # Clean HTML from content for better processing
         clean_content = self._strip_html(content)
 
         if not clean_content or len(clean_content) < MIN_SOURCE_LENGTH:
             logger.warning("content_too_short", length=len(clean_content))
             return None
+
+        placeholder = platform_placeholder_reason(original_title, content)
+        if placeholder:
+            logger.warning("source_platform_placeholder", reason=placeholder)
+            return None
+
+        self._rate_limit()
 
         # Truncate very long content
         if len(clean_content) > 10000:
@@ -200,6 +210,11 @@ Remember to respond with valid JSON containing headline, excerpt, and body."""
             if use_original_title:
                 result["headline"] = original_title
 
+            problem = publication_content_problem(result["headline"], result["body"])
+            if problem:
+                logger.warning("rewrite_content_rejected", reason=problem)
+                return None
+
             logger.info(
                 "rewrite_complete",
                 model=model,
@@ -223,22 +238,23 @@ Remember to respond with valid JSON containing headline, excerpt, and body."""
         try:
             data = json.loads(response_text)
 
-            # Validate required fields
-            if not all(k in data for k in ["headline", "body"]):
-                logger.warning("missing_required_fields", data=data)
-                return None
-
-            return {
-                "headline": data["headline"].strip(),
-                "excerpt": data.get("excerpt", "").strip(),
-                "body": data["body"].strip(),
-            }
-
         except json.JSONDecodeError as e:
             logger.warning("json_parse_error", error=str(e), response=response_text[:200])
 
             # Try to extract from malformed response
-            return self._extract_fallback(response_text)
+            data = self._extract_fallback(response_text)
+
+        if not isinstance(data, dict):
+            return None
+        problem = publication_content_problem(data.get("headline"), data.get("body"))
+        if problem or not isinstance(data.get("excerpt", ""), str):
+            logger.warning("rewrite_content_rejected", reason=problem or "invalid_excerpt")
+            return None
+        return {
+            "headline": data["headline"].strip(),
+            "excerpt": data.get("excerpt", "").strip(),
+            "body": data["body"].strip(),
+        }
 
     def _extract_fallback(self, text: str) -> Optional[dict]:
         """Try to extract content from malformed response.
