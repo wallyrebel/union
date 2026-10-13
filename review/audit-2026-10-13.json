@@ -1,0 +1,106 @@
+{
+  "site": "https://unionnewsms.com",
+  "repository": "wallyrebel/union",
+  "mode": "read-only",
+  "posts": [
+    {
+      "id": 4736,
+      "link": "https://unionnewsms.com/mississippi-news/fall-severe-weather-preparedness-week-highlights-safety-tips/",
+      "rendered_sha256": {
+        "title": "2a61b6068b88373979e4d26da10d14e5b4106230da506bd200b3fc0ea9a1bd25",
+        "excerpt": "2e8984afae52b3bf946fc600bc5a18467fd2379e1b5c17f0f793df09405c1708",
+        "content": "1110aefaa780b7f808dc4b5746928d27384fd49a272450db655913c2fe5c9bad"
+      },
+      "replacements": {
+        "content": [
+          {
+            "old": "Missouri Emergency Management Agency",
+            "new": "Mississippi Emergency Management Agency",
+            "count": 1
+          }
+        ]
+      },
+      "sources": [
+        "https://www.facebook.com/reel/1107725884970706/"
+      ]
+    },
+    {
+      "id": 4734,
+      "link": "https://unionnewsms.com/mississippi-news/north-half-volleyball-championship-game-scheduled-for-tuesday/",
+      "rendered_sha256": {
+        "title": "e6646e30adf203bd33f4a451d3d6b20b40be471d3822bcf577b6706c46c29603",
+        "excerpt": "3c4ab36588927a3803e3d099c2d450dc030e6c9bee342358173385af590ba2ab",
+        "content": "e23211ec0fa96d9b255a5b7c12b546e42435031e9ac9475f91bb410bb3e93130"
+      },
+      "replacements": {},
+      "sources": [
+        "https://www.facebook.com/1172857154997552/posts/1392844142998851"
+      ],
+      "set": {
+        "title": "Ingomar’s North Half volleyball match was scheduled for Monday, Oct. 12",
+        "excerpt": "Ingomar’s Lady Falcons were scheduled to face TCPS at 6 p.m. Monday, Oct. 12, at Ingomar for a state-final berth.",
+        "content": "<p>The Ingomar Lady Falcons were scheduled to face TCPS in the North Half volleyball championship at 6 p.m. Monday, Oct. 12, at Ingomar.</p>\n<p>The school’s announcement encouraged students to wear Hawaiian-themed attire and fans to support the team.</p>\n<p><em>Correction (Oct. 13, 2026): The match was scheduled for Monday, Oct. 12, not Tuesday.</em></p>\n<p><em>Source: <a href=\"https://www.facebook.com/1172857154997552/posts/1392844142998851\">Ingomar Attendance Center announcement</a></em></p>"
+      },
+      "note": "Monday date supplied in parent verified ledger; independent caption confirms teams, place, time, attire."
+    },
+    {
+      "id": 4746,
+      "link": "https://unionnewsms.com/mississippi-news/ingomar-lady-falcons-advance-to-state-volleyball-championship/",
+      "rendered_sha256": {
+        "title": "4ba05f0fe027f2091ceaa208054a1d357ea96745305bac63796586b639aeca8d",
+        "excerpt": "940b81cbb934272f26dd431366252962ca0d2396eca4f62f5a516ce00c8f0501",
+        "content": "7b9b4a053ebd5fea20aa64bb8d2cc1109d8f648a21ea8e0123eeb0933fc3972c"
+      },
+      "replacements": {},
+      "sources": [
+        "https://www.misshsaa.com/2026/10/08/2026-mhsaa-volleyball-championships/",
+        "https://www.facebook.com/1172857154997552/posts/1393283026288296"
+      ],
+      "set": {
+        "title": "Ingomar faces Resurrection in Friday’s Class 1A volleyball final",
+        "excerpt": "Ingomar meets Resurrection at noon Friday, Oct. 16, at Mississippi College’s A.E. Wood Coliseum in Clinton.",
+        "content": "<p>The Ingomar Lady Falcons have advanced to the Class 1A state volleyball championship, according to Ingomar Attendance Center’s announcement.</p>\n<p>The <a href=\"https://www.misshsaa.com/2026/10/08/2026-mhsaa-volleyball-championships/\">MHSAA championship schedule</a> lists Ingomar against Resurrection at noon Friday, Oct. 16, at Mississippi College’s A.E. Wood Coliseum in Clinton.</p>\n<p>The final is this week. The MHSAA schedule links to GoFan for tickets and the NFHS Network for the livestream.</p>\n<p><em>Source: <a href=\"https://www.facebook.com/1172857154997552/posts/1393283026288296\">Ingomar Attendance Center</a> and the MHSAA championship schedule.</em></p>"
+      }
+    },
+    {
+      "id": 4742,
+      "link": "https://unionnewsms.com/mississippi-news/new-albany-advances-to-4a-volleyball-final/",
+      "rendered_sha256": {
+        "title": "a40aaa9b0632e0c83cb9aa055e03db9689d8deeb92acfdec898fe64684eeb950",
+        "excerpt": "d5399dfdedf44db63811eaf86e32fddba8bee1b492019869f9974dced4bdc62d",
+        "content": "26896755e3112939b03f66f94e27d4587c55c2d61f71c4c8b3bee683903b66a8"
+      },
+      "replacements": {},
+      "sources": [
+        "https://www.misshsaa.com/2026/10/08/2026-mhsaa-volleyball-championships/",
+        "https://www.facebook.com/1547172980425586/posts/1808467717629443"
+      ],
+      "set": {
+        "title": "New Albany earns Class 4A volleyball final berth; faces Choctaw Central Friday",
+        "excerpt": "New Albany faces Choctaw Central at 2 p.m. Friday, Oct. 16, at Mississippi College’s A.E. Wood Coliseum in Clinton.",
+        "content": "<p>New Albany is listed in the Class 4A state volleyball final against Choctaw Central on the <a href=\"https://www.misshsaa.com/2026/10/08/2026-mhsaa-volleyball-championships/\">MHSAA championship schedule</a>.</p>\n<p>The final is scheduled for 2 p.m. Friday, Oct. 16, at Mississippi College’s A.E. Wood Coliseum in Clinton. Friday’s schedule also includes the Class 3A match at 10 a.m. and the Class 1A match at noon.</p>\n<p>The MHSAA schedule provides the <a href=\"https://gofan.co/event/6953001?schoolId=MISSHSAA\">Class 4A GoFan ticket link</a> and lists the NFHS Network as the livestream provider. Readers can use the official schedule to check current event information.</p>\n<p><em>Sources: <a href=\"https://www.facebook.com/1547172980425586/posts/1808467717629443\">Original New Albany announcement</a> and the MHSAA championship schedule.</em></p>"
+      },
+      "note": "Expansion proposal only: preserve both duplicate URLs/statuses. Official schedule verified; original Facebook post inaccessible. No semifinal opponent/score/history claim added."
+    },
+    {
+      "id": 4744,
+      "link": "https://unionnewsms.com/mississippi-news/new-albany-advances-to-4a-volleyball-final-2/",
+      "rendered_sha256": {
+        "title": "a40aaa9b0632e0c83cb9aa055e03db9689d8deeb92acfdec898fe64684eeb950",
+        "excerpt": "0512cbf99edbc51928c72e9e6647769b2d2f97db183ea47ed53781d9b9b206fa",
+        "content": "c937e41ae4975f21c0da0575b1358810d77f7b3d5f6d1bd0b4892a8323a783cc"
+      },
+      "replacements": {},
+      "sources": [
+        "https://www.misshsaa.com/2026/10/08/2026-mhsaa-volleyball-championships/",
+        "https://www.facebook.com/1547172980425586/posts/1808467640962784"
+      ],
+      "set": {
+        "title": "New Albany volleyball final: Friday schedule, venue and ticket links",
+        "excerpt": "New Albany faces Choctaw Central at 2 p.m. Friday, Oct. 16, at Mississippi College’s A.E. Wood Coliseum in Clinton.",
+        "content": "<p>New Albany is listed in the Class 4A state volleyball final against Choctaw Central on the <a href=\"https://www.misshsaa.com/2026/10/08/2026-mhsaa-volleyball-championships/\">MHSAA championship schedule</a>.</p>\n<p>The final is scheduled for 2 p.m. Friday, Oct. 16, at Mississippi College’s A.E. Wood Coliseum in Clinton. Friday’s schedule also includes the Class 3A match at 10 a.m. and the Class 1A match at noon.</p>\n<p>The MHSAA schedule provides the <a href=\"https://gofan.co/event/6953001?schoolId=MISSHSAA\">Class 4A GoFan ticket link</a> and lists the NFHS Network as the livestream provider. Readers can use the official schedule to check current event information.</p>\n<p><em>Sources: <a href=\"https://www.facebook.com/1547172980425586/posts/1808467640962784\">Original New Albany announcement</a> and the MHSAA championship schedule.</em></p>"
+      },
+      "note": "Expansion proposal only: preserve both duplicate URLs/statuses. Official schedule verified; original Facebook post inaccessible. No semifinal opponent/score/history claim added."
+    }
+  ]
+}
