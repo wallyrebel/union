@@ -1,0 +1,32 @@
+name: Read-only approved illustration reconciliation
+on:
+  push:
+    branches: ['codex/audit-2026-10-13-review']
+    paths: ['scripts/media_preflight.py', '.github/workflows/media-preflight.yml']
+permissions:
+  contents: read
+concurrency:
+  group: union-audit-2026-10-13
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install Pillow
+      - name: Inspect existing media in all exposed statuses; no writes
+        env:
+          WORDPRESS_BASE_URL: ${{ secrets.WORDPRESS_BASE_URL }}
+          WORDPRESS_USERNAME: ${{ secrets.WORDPRESS_USERNAME }}
+          WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
+        run: python scripts/media_preflight.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: approved-illustration-preflight
+          path: data/approved-image-preflight.json
+          retention-days: 14
