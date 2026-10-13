@@ -22,7 +22,12 @@
       },
       "sources": [
         "https://www.facebook.com/reel/1107725884970706/"
-      ]
+      ],
+      "expected_before_sha256": "e675a3dcfec03a00750eb92d1c6ff21e6959f4c6b654b20dd8042bf684ca407d",
+      "append": {
+        "content": "<p><em>Correction (Oct. 13, 2026): MEMA refers to the Mississippi Emergency Management Agency. An earlier version incorrectly named Missouri.</em></p>"
+      },
+      "approval_note": "Parent-approved dated factual correction note; original before/revision digest preserved."
     },
     {
       "id": 4734,
@@ -45,7 +50,8 @@
         "excerpt": "Ingomar beat Tupelo Christian Prep 3–0 at home Monday, Oct. 12, to earn a berth in the Class 1A state volleyball final.",
         "content": "<p>Ingomar defeated Tupelo Christian Prep 3–0 at home Monday, Oct. 12, to win the North Half volleyball final and advance to the Class 1A state championship.</p>\n<p>The Lady Falcons won 29–27, 25–10, 25–19, according to the <a href=\"https://www.maxpreps.com/ms/volleyball/match/ingomar-new-albany-vs-tupelo-christian-prep-belden/10-12-2026/?c=3a476da2-ed8c-4ff6-bcd5-375bfbbb6140\">MaxPreps match report</a>.</p>\n<p>The Lady Falcons will face Resurrection in the state final. Read our <a href=\"https://unionnewsms.com/mississippi-news/ingomar-lady-falcons-advance-to-state-volleyball-championship/\">championship preview for the opponent, time and venue</a>.</p>\n<p><em>Correction: An earlier version of this article incorrectly said the North Half match was scheduled for Tuesday. It was played Monday, Oct. 12, 2026. The article has also been updated with the result.</em></p>\n"
       },
-      "note": "Parent exact copy independently corroborated against fresh direct HTTP schedules, match result, bracket and MHSAA history. Existing URLs, dates, authors, statuses and media preserved. Event times are Mississippi local time."
+      "note": "Parent exact copy independently corroborated against fresh direct HTTP schedules, match result, bracket and MHSAA history. Existing URLs, dates, authors, statuses and media preserved. Event times are Mississippi local time.",
+      "expected_before_sha256": "dc520af61bddf46ef0406ea4cbf8aaecd0c9c23f343ee38a08a2458222fc6ad1"
     },
     {
       "id": 4746,
@@ -68,7 +74,8 @@
         "excerpt": "The Lady Falcons will play Resurrection at noon Friday, Oct. 16, at A.E. Wood Coliseum in Clinton for the Class 1A state championship.",
         "content": "<p>Ingomar will face Resurrection in the Class 1A state volleyball final at noon Friday, Oct. 16, at Mississippi College's A.E. Wood Coliseum in Clinton, according to the <a href=\"https://www.misshsaa.com/2026/10/08/2026-mhsaa-volleyball-championships/\">MHSAA championship schedule</a>.</p>\n<p>The Lady Falcons advanced by sweeping Tupelo Christian Prep 3–0 on Monday, Oct. 12. <a href=\"https://www.maxpreps.com/ms/new-albany/ingomar-falcons/volleyball/schedule/\">MaxPreps lists Ingomar at 25–7</a> after that victory.</p>\n<p>Ingomar has won all four of its playoff matches in straight sets, beating Biggersville, Potts Camp, Pine Grove and Tupelo Christian Prep, according to its MaxPreps schedule.</p>\n<p>The MHSAA championship page provides ticket and livestream links for fans.</p>\n<p><em>Correction: An earlier version said the state tournament would begin next week. The championships are Oct. 15–16, 2026, with Ingomar's final scheduled for Oct. 16. The opponent, time and venue have been added.</em></p>\n"
       },
-      "note": "Parent exact copy independently corroborated against fresh direct HTTP schedules, match result, bracket and MHSAA history. Existing URLs, dates, authors, statuses and media preserved. Event times are Mississippi local time."
+      "note": "Parent exact copy independently corroborated against fresh direct HTTP schedules, match result, bracket and MHSAA history. Existing URLs, dates, authors, statuses and media preserved. Event times are Mississippi local time.",
+      "expected_before_sha256": "9f68a04c5538823c07dfa0b076b6754370cf63f846960e851c90477ab2cb9552"
     },
     {
       "id": 4742,
@@ -91,7 +98,8 @@
         "excerpt": "New Albany beat Mooreville 25–22, 25–13, 25–19 on Monday, completing a fourth straight playoff sweep and returning to the Class 4A final.",
         "content": "<p>New Albany swept Mooreville 3–0 on the road Monday, Oct. 12, to advance to the Class 4A state volleyball championship.</p>\n<p>The Bulldogs won 25–22, 25–13, 25–19, according to the <a href=\"https://www.maxpreps.com/tournament/ubMpN1v1D0qu0oRFYRvlbQ/CCoh9nISG0WUQpQosa0I7Q/volleyball-26/2026-mhsaa-volleyball-championships-class-4a.htm\">MHSAA-linked tournament bracket on MaxPreps</a>. Their <a href=\"https://www.maxpreps.com/ms/new-albany/new-albany-bulldogs/volleyball/schedule/\">team schedule</a> lists the match at Mooreville and a 32–9 overall record after the win.</p>\n<p>New Albany has not dropped a set in this postseason. The Bulldogs also swept Byhalia in the first round, Amory in the second round and Ripley in the third round.</p>\n<p>The Bulldogs are the defending Class 4A champions. <a href=\"https://www.misshsaa.com/2025/10/16/new-albany-wins-2025-class-4a-volleyball-championship/\">MHSAA records show New Albany beat Newton County 3–2 in the 2025 final</a>.</p>\n<p>New Albany will face Choctaw Central for this year's title. See our <a href=\"https://unionnewsms.com/mississippi-news/new-albany-advances-to-4a-volleyball-final-2/\">championship preview for Friday's time and venue</a>.</p>\n<p><em>Correction: An earlier version incorrectly suggested New Albany was seeking its first state title under the current classification. New Albany won the Class 4A championship in 2025.</em></p>\n"
       },
-      "note": "Parent exact copy independently corroborated against fresh direct HTTP schedules, match result, bracket and MHSAA history. Existing URLs, dates, authors, statuses and media preserved. Event times are Mississippi local time."
+      "note": "Parent exact copy independently corroborated against fresh direct HTTP schedules, match result, bracket and MHSAA history. Existing URLs, dates, authors, statuses and media preserved. Event times are Mississippi local time.",
+      "expected_before_sha256": "3eccf7c922a8eb3fc176706c15989e9525fbfbd407fcbf23a6f4921cb7d09ca1"
     },
     {
       "id": 4744,
@@ -114,7 +122,8 @@
         "excerpt": "Defending champion New Albany meets Choctaw Central at 2 p.m. Friday, Oct. 16, at A.E. Wood Coliseum in Clinton.",
         "content": "<p>New Albany will defend its Class 4A volleyball title against Choctaw Central at 2 p.m. Friday, Oct. 16, at Mississippi College's A.E. Wood Coliseum in Clinton. The matchup is listed on the <a href=\"https://www.misshsaa.com/2026/10/08/2026-mhsaa-volleyball-championships/\">MHSAA championship schedule</a>.</p>\n<p>The Bulldogs won last year's championship by defeating Newton County in five sets, according to <a href=\"https://www.misshsaa.com/2025/10/16/new-albany-wins-2025-class-4a-volleyball-championship/\">MHSAA's 2025 final result</a>.</p>\n<p>Choctaw Central reached this year's final with a 3–1 semifinal win over Newton County on Oct. 12, according to the <a href=\"https://www.maxpreps.com/tournament/ubMpN1v1D0qu0oRFYRvlbQ/CCoh9nISG0WUQpQosa0I7Q/volleyball-26/2026-mhsaa-volleyball-championships-class-4a.htm\">MHSAA-linked MaxPreps bracket</a>.</p>\n<p>Fans can find the Class 4A ticket link and livestream information on the MHSAA championship page.</p>\n<p>Read our <a href=\"https://unionnewsms.com/mississippi-news/new-albany-advances-to-4a-volleyball-final/\">semifinal recap</a> for New Albany's victory over Mooreville and its playoff results.</p>\n<p><em>Editor's note: This brief has been expanded with the championship matchup, schedule and title-defense context.</em></p>\n"
       },
-      "note": "Parent exact copy independently corroborated against fresh direct HTTP schedules, match result, bracket and MHSAA history. Existing URLs, dates, authors, statuses and media preserved. Event times are Mississippi local time."
+      "note": "Parent exact copy independently corroborated against fresh direct HTTP schedules, match result, bracket and MHSAA history. Existing URLs, dates, authors, statuses and media preserved. Event times are Mississippi local time.",
+      "expected_before_sha256": "4a2090433840f55eb778b2e05be1c1d434d2ab7361f082e4f610b0637ef8ab7e"
     }
   ]
 }
