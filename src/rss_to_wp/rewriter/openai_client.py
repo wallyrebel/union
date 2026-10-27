@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from rss_to_wp.rewriter.model_options import chat_model_params, resolve_retired_model
+from rss_to_wp.rewriter.model_options import create_model_completion, resolve_retired_model
 
 import json
 import re
@@ -202,7 +202,7 @@ Remember to respond with valid JSON containing headline, excerpt, and body."""
             api_params["response_format"] = {"type": "json_object"}
 
         logger.info("calling_openai", model=model)
-        response = self.client.chat.completions.create(**chat_model_params(api_params))
+        response = create_model_completion(self.client, api_params)
 
         # Parse response
         response_text = response.choices[0].message.content
