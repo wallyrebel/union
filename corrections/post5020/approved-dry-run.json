@@ -1,0 +1,43 @@
+{
+  "state": "dry_run_verified",
+  "repository": "wallyrebel/union",
+  "host": "unionnewsms.com",
+  "post_id": 5020,
+  "stage": "dry-run",
+  "payload_sha256": "2f6e36e89281d1ece3cb8b73e7779c98a9fb1bd914aa67777b2e521adf40bae4",
+  "ledger_sha256": "f72f173ab1984f4c5b41a2bea98d5859811901f7937b9b424590ccecda9048bf",
+  "implementation_sha256": "9e710b378d9aaea172c4e8aae91fe02331776a3e74a87833df61b48389f38469",
+  "run_id": "40532565538",
+  "commit": "6e209b5959146e6004f373cb4cd4406352e2b04b",
+  "writes_attempted": 0,
+  "before_raw_sha256": {
+    "title": "33c846c1d62598e141347e3123a08112571377cef054be96fcee4201a76e5de9",
+    "content": "edc487c2373f66706cfde0fe0b848561f23768a9a6dc3e4aa559c0f3fb701851",
+    "excerpt": "a9c3e824c0157185252e001741b808125ec0eaa1613a668d40f4d6bb11756ce8"
+  },
+  "before_rendered_sha256": {
+    "title": "33c846c1d62598e141347e3123a08112571377cef054be96fcee4201a76e5de9",
+    "content": "afb1e48445bcd30801b72b1d1c007f682d0e5a4ecd2924b6781c3fd5330d4f61",
+    "excerpt": "70621bb9033ddb269010a8cc232f536d234a9f1529666e40873b78012b3d1aca"
+  },
+  "before_modified_gmt": "2026-10-27T03:30:33",
+  "before_identity": {
+    "id": 5020,
+    "status": "publish",
+    "slug": "girls-golf-team-wins-state-championship",
+    "link": "https://unionnewsms.com/mississippi-news/girls-golf-team-wins-state-championship/",
+    "date": "2026-10-26T22:30:33",
+    "date_gmt": "2026-10-27T03:30:33",
+    "author": 1,
+    "featured_media": 5019,
+    "categories": [
+      45
+    ],
+    "tags": [],
+    "comment_status": "open",
+    "ping_status": "closed",
+    "sticky": false,
+    "template": "",
+    "format": "standard"
+  }
+}
