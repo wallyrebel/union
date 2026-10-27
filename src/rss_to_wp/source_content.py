@@ -66,6 +66,26 @@ def platform_placeholder_reason(title: str, content: str) -> str | None:
     return None
 
 
+# Some replacement-model refusals are valid JSON but describe missing source
+# details instead of reporting news. These must fail before media/post writes.
+_MODEL_INSUFFICIENCY_HEADLINE = re.compile(
+    r"(?:no (?:schedule|conference|event|source|article|story) details (?:were )?provided(?: for .*)?"
+    r"|article offers no details(?: on .*)?)"
+)
+
+
+def model_insufficiency_reason(title: str, content: str) -> str | None:
+    heading = _normalized_text(title)
+    text = _normalized_text(content)
+    if _MODEL_INSUFFICIENCY_HEADLINE.fullmatch(heading):
+        return "model_missing_source_details"
+    if re.match(r"the (?:submitted|supplied|provided) (?:text|content|source)\b", text) and re.search(
+        r"\b(?:does not include|doesn't include|does not provide|doesn't provide|lacks)\b", text
+    ):
+        return "model_missing_source_details"
+    return None
+
+
 def publication_content_problem(title: str, content: str) -> str | None:
     """Reject missing/empty output and known placeholders before any WP work.
 
@@ -77,7 +97,7 @@ def publication_content_problem(title: str, content: str) -> str | None:
         return "empty_headline"
     if not clean_source_content(content):
         return "empty_body"
-    return platform_placeholder_reason(title, content)
+    return platform_placeholder_reason(title, content) or model_insufficiency_reason(title, content)
 
 
 def clean_source_content(html: str) -> str:

@@ -35,6 +35,7 @@ RULES:
 8. If information is missing, do not invent it
 9. Keep the article factual and concise
 10. Use proper AP style for numbers, dates, titles, etc.
+11. If the source lacks a substantive news update, return null for headline and body. Do not write about missing source details or describe what the supplied text does not say.
 
 OUTPUT FORMAT:
 You must respond with valid JSON in this exact format:
@@ -45,7 +46,7 @@ You must respond with valid JSON in this exact format:
 }
 
 IMPORTANT:
-- The body should be 3-6 paragraphs
+- Use only as many paragraphs as the facts support; a factual short update may be one paragraph
 - Use <p> tags to wrap each paragraph
 - Do NOT include the headline in the body
 - Do NOT include any markdown - use HTML only
