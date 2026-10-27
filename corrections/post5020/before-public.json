@@ -1,0 +1,31 @@
+{
+  "id": 5020,
+  "status": "publish",
+  "slug": "girls-golf-team-wins-state-championship",
+  "link": "https://unionnewsms.com/mississippi-news/girls-golf-team-wins-state-championship/",
+  "date": "2026-10-26T22:30:33",
+  "date_gmt": "2026-10-27T03:30:33",
+  "modified_gmt": "2026-10-27T03:30:33",
+  "author": 1,
+  "featured_media": 5019,
+  "categories": [
+    45
+  ],
+  "tags": [],
+  "comment_status": "open",
+  "ping_status": "closed",
+  "sticky": false,
+  "template": "",
+  "format": "standard",
+  "title": {
+    "rendered": "Girls Golf Team Wins State Championship"
+  },
+  "content": {
+    "rendered": "<p>The girls golf team won the state championship, according to the article.</p>\n<p>The article did not provide details about the competition or include the players’ comments.</p>\n<p><em>Source: <a href=\"https://www.facebook.com/1547172980425586/posts/1823968986079316\" target=\"_blank\" rel=\"noopener\">Original Article</a></em></p>\n",
+    "protected": false
+  },
+  "excerpt": {
+    "rendered": "<p>The girls golf team won the state championship. The original article did not include further details or comments from the team.</p>\n",
+    "protected": false
+  }
+}

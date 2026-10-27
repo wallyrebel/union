@@ -1,0 +1,41 @@
+name: Fixed reviewed correction for post 5020
+on:
+  push:
+    branches: [codex/fix-post5020-20261027]
+    paths:
+      - .github/workflows/correct-post5020.yml
+      - scripts/correct_post5020.py
+      - tests/test_fixed_post5020.py
+      - corrections/post5020/**
+permissions:
+  contents: read
+concurrency:
+  group: union-post5020-reviewed-correction
+  cancel-in-progress: false
+jobs:
+  correct-fixed-post:
+    if: github.repository == 'wallyrebel/union' && github.ref == 'refs/heads/codex/fix-post5020-20261027'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Offline fixed-target regression tests
+        run: python -m unittest discover -s tests -p 'test_fixed_post5020.py' -v
+      - name: Fixed reviewed correction stage
+        env:
+          WORDPRESS_BASE_URL: ${{ secrets.WORDPRESS_BASE_URL }}
+          WORDPRESS_USERNAME: ${{ secrets.WORDPRESS_USERNAME }}
+          WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
+        run: python scripts/correct_post5020.py
+      - name: Save sanitized correction receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fixed-post5020-${{ github.run_id }}
+          path: data/correction-post5020/result.json
+          retention-days: 30

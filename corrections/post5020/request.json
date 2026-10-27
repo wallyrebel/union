@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "stage": "dry-run",
+  "target_id": 5020,
+  "expected_content_sha256": "afb1e48445bcd30801b72b1d1c007f682d0e5a4ecd2924b6781c3fd5330d4f61",
+  "payload_sha256": "2f6e36e89281d1ece3cb8b73e7779c98a9fb1bd914aa67777b2e521adf40bae4",
+  "payload": {
+    "title": "New Albany girls golf celebrates Class 4A state championship",
+    "content": "<p>New Albany&#x27;s girls golf team celebrated its Class 4A state championship in a school social media post Monday, Oct. 26. The accompanying graphic identifies the team as NA Girls Golf and includes five players&#x27; comments reflecting on their teammates, work and championship, alongside photographs and a Class 4A trophy.</p>\n<p>Source: <a href=\"https://www.facebook.com/1547172980425586/posts/1823968986079316\">Original school announcement and graphic</a></p>\n<p><em>Correction (Oct. 27, 2026): An earlier version omitted New Albany&#x27;s team name and incorrectly said player comments were unavailable. The original source graphic includes five player comments.</em></p>",
+    "excerpt": "New Albany's Class 4A girls golf championship graphic includes five players' comments celebrating their team."
+  },
+  "dry_run_receipt_sha256": null
+}

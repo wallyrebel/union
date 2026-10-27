@@ -1,0 +1,29 @@
+{
+  "review": "source graphic pixels and exact public original caption independently reviewed2026-10-27",
+  "post_id": 5020,
+  "source": {
+    "original_post_URL": "https://www.facebook.com/1547172980425586/posts/1823968986079316",
+    "original_graphic_sha256": "b0bbf797a83f0bbc3a1829a14c244d3186564cdac2bfbad5e98241ae6cfdc89e",
+    "existing_featured_asset_sha256": "377eaeb1d85a3c03c8f8ff73cb3e951c8324cfe95e9457589741cc87b9268801",
+    "pixels_inspected": true
+  },
+  "approved_facts": [
+    "NewAlbanygirls golf",
+    "Class4Astatechampionshiptrophy",
+    "fiveplayercommentsinsourcegraphic",
+    "schoolpostMondayOctober26,2026;notclaimingchampionshipwonthatday"
+  ],
+  "excluded": [
+    "studentinjury/healthdetails",
+    "newprivateinformation",
+    "newallegations",
+    "imageorreuserightschanges"
+  ],
+  "editorial_fields": [
+    "title",
+    "content",
+    "excerpt"
+  ],
+  "material_correction_note_included": true,
+  "image_unchanged": 5019
+}
