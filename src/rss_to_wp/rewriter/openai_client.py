@@ -103,6 +103,9 @@ class OpenAIRewriter:
         """
         # Clean HTML from content for better processing
         clean_content = self._strip_html(content)
+        # Why the model's answer was rejected, for the caller's attempt limit.
+        # Stays None for API/network errors, which are always retried.
+        self.last_rejection = None
 
         if not clean_content or len(clean_content) < MIN_SOURCE_LENGTH:
             logger.warning("content_too_short", length=len(clean_content))
@@ -216,6 +219,7 @@ Remember to respond with valid JSON containing headline, excerpt, and body."""
             problem = publication_content_problem(result["headline"], result["body"])
             if problem:
                 logger.warning("rewrite_content_rejected", reason=problem)
+                self.last_rejection = problem
                 return None
 
             logger.info(
@@ -248,10 +252,12 @@ Remember to respond with valid JSON containing headline, excerpt, and body."""
             data = self._extract_fallback(response_text)
 
         if not isinstance(data, dict):
+            self.last_rejection = "unusable_response"
             return None
         problem = publication_content_problem(data.get("headline"), data.get("body"))
         if problem or not isinstance(data.get("excerpt", ""), str):
             logger.warning("rewrite_content_rejected", reason=problem or "invalid_excerpt")
+            self.last_rejection = problem or "invalid_excerpt"
             return None
         return {
             "headline": data["headline"].strip(),

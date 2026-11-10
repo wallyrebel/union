@@ -230,6 +230,10 @@ def run(
         raise typer.Exit(1)
 
 
+# Scheduled runs that may send one story to the model before it is held.
+MAX_REWRITE_ATTEMPTS = 3
+
+
 def process_feed(
     feed_config: FeedConfig,
     settings: AppSettings,
@@ -310,7 +314,24 @@ def process_feed(
                 skipped += 1
                 continue
 
+            # The model has already declined or failed to write this story on
+            # several runs (for example a caption with no reportable facts).
+            # Stop paying to ask again every run for the rest of the window.
+            held_attempts, held_reason = dedupe_store.rejection_state(entry_key)
+            if held_attempts >= MAX_REWRITE_ATTEMPTS:
+                logger.info(
+                    "entry_held_after_rejections",
+                    key=entry_key,
+                    title=get_entry_title(entry)[:50],
+                    attempts=held_attempts,
+                    reason=held_reason,
+                )
+                skipped += 1
+                continue
+
             # Process entry
+            if hasattr(rewriter, "last_rejection"):
+                rewriter.last_rejection = None
             result = process_entry(
                 entry=entry,
                 feed_config=feed_config,
@@ -342,6 +363,17 @@ def process_feed(
                     })
             else:
                 errors += 1
+                # Only a rejected model answer counts. API and network errors
+                # leave last_rejection unset and are retried without limit.
+                rejection = getattr(rewriter, "last_rejection", None)
+                if isinstance(rejection, str) and not dry_run:
+                    dedupe_store.record_rejection(
+                        entry_key=entry_key,
+                        feed_url=feed_config.url,
+                        entry_title=get_entry_title(entry),
+                        entry_link=get_entry_link(entry) or "",
+                        reason=rejection,
+                    )
 
             # Rate limit between entries
             time.sleep(1)
