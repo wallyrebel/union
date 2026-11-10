@@ -25,9 +25,19 @@ on:
 env:
   PYTHON_VERSION: '3.11'
 
+# The job only reads the repository; publishing uses the WordPress secrets.
+permissions:
+  contents: read
+
+# A manual run and the 15-minute schedule must never publish the same story twice.
+concurrency:
+  group: rss-to-wp-publish
+  cancel-in-progress: false
+
 jobs:
   process-feeds:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
       - name: Checkout repository
@@ -95,7 +105,10 @@ jobs:
           
           python -m rss_to_wp run $ARGS
 
+      # Save even when the run step fails or times out: stories published
+      # before the failure must stay recorded or the next run posts them again.
       - name: Save database to cache
+        if: always() && hashFiles('data/processed.db') != ''
         uses: actions/cache/save@v4
         with:
           path: data/processed.db
