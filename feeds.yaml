@@ -14,6 +14,7 @@ feeds:
     enabled: true
 
   - name: "Union County News Feed 2"
+    shared_announcements: "new-albany-schools"
     url: "https://fetchrss.com/feed/1vcaujD2G3c21vgZdj0Jp5zS.rss"
     category: "Local News"
     enabled: true
@@ -24,6 +25,7 @@ feeds:
     enabled: true
 
   - name: "Union County News Feed 4"
+    shared_announcements: "new-albany-schools"
     url: "https://fetchrss.com/feed/1vcaujD2G3c21vgZfc0X8EWh.rss"
     category: "Local News"
     enabled: true

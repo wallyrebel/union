@@ -27,6 +27,7 @@ class DedupeStore:
             db_path = get_data_dir() / "processed.db"
 
         self.db_path = db_path
+        self.preview_announcements = set()
         self._init_db()
 
     def _init_db(self) -> None:
@@ -52,6 +53,7 @@ class DedupeStore:
                 CREATE INDEX IF NOT EXISTS idx_feed_url
                 ON processed_entries(feed_url)
             """)
+            conn.execute("CREATE TABLE IF NOT EXISTS shared_announcements (key TEXT PRIMARY KEY)")
             conn.commit()
 
         logger.debug("database_initialized", path=str(self.db_path))
@@ -95,6 +97,7 @@ class DedupeStore:
         entry_link: str,
         wp_post_id: Optional[int] = None,
         wp_post_url: Optional[str] = None,
+        announcement_key: Optional[str] = None,
     ) -> None:
         """Mark an entry as processed.
 
@@ -123,6 +126,8 @@ class DedupeStore:
                     datetime.utcnow().isoformat(),
                 ),
             )
+            if announcement_key:
+                conn.execute("INSERT OR IGNORE INTO shared_announcements VALUES (?)", (announcement_key,))
             conn.commit()
 
         logger.info(
@@ -130,6 +135,12 @@ class DedupeStore:
             key=entry_key,
             wp_post_id=wp_post_id,
         )
+
+    def announcement_seen(self, key: str, dry_run: bool = False) -> bool:
+        if dry_run and key in self.preview_announcements:
+            return True
+        with self._get_connection() as conn:
+            return conn.execute("SELECT 1 FROM shared_announcements WHERE key=?", (key,)).fetchone() is not None
 
     def get_processed_count(self, feed_url: Optional[str] = None) -> int:
         """Get count of processed entries.
@@ -197,6 +208,8 @@ class DedupeStore:
         with self._get_connection() as conn:
             cursor = conn.execute("DELETE FROM processed_entries")
             count = cursor.rowcount
+            conn.execute("DELETE FROM shared_announcements")
+            self.preview_announcements.clear()
             conn.commit()
 
         logger.warning("database_cleared", deleted_count=count)

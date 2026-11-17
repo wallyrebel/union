@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import hashlib
 import sys
 import time
 from pathlib import Path
 from typing import Optional
+from zoneinfo import ZoneInfo
 
 import typer
 from dotenv import load_dotenv
@@ -19,6 +21,7 @@ from rss_to_wp.config import (
 )
 from rss_to_wp.feeds import (
     generate_entry_key,
+    parse_entry_date,
     get_entry_content,
     get_entry_link,
     get_entry_title,
@@ -301,7 +304,8 @@ def process_feed(
             # Match the rewriter's existing guard without conflating missing source
             # text with a generation failure. Do not mark the GUID as processed:
             # the same item may gain a usable caption on a later feed fetch.
-            source_length = len(clean_source_content(get_entry_content(entry)))
+            source_text = clean_source_content(get_entry_content(entry))
+            source_length = len(source_text)
             if source_length < MIN_SOURCE_LENGTH:
                 logger.info(
                     "entry_skipped_insufficient_content",
@@ -312,6 +316,19 @@ def process_feed(
                 )
                 skipped += 1
                 continue
+
+            announcement_key = None
+            if feed_config.shared_announcements and len(source_text.split()) >= 12:
+                published = parse_entry_date(entry)
+                if published:
+                    caption = " ".join(source_text.casefold().split())
+                    day = published.astimezone(ZoneInfo(settings.timezone))
+                    identity = f"{feed_config.shared_announcements}|{day.date()}|{caption}"
+                    announcement_key = hashlib.sha256(identity.encode()).hexdigest()
+                    if dedupe_store.announcement_seen(announcement_key, dry_run):
+                        logger.info("shared_school_announcement_already_used", key=entry_key)
+                        skipped += 1
+                        continue
 
             # Process entry
             attempts += 1
@@ -335,7 +352,10 @@ def process_feed(
                         entry_link=get_entry_link(entry) or "",
                         wp_post_id=result.get("id"),
                         wp_post_url=result.get("link"),
+                        announcement_key=announcement_key,
                     )
+                elif announcement_key:
+                    dedupe_store.preview_announcements.add(announcement_key)
                 processed += 1
                 
                 # Track for email notification

@@ -91,6 +91,16 @@ def test_existing_50_character_boundary_is_preserved(pipeline):
     pipeline.editor.rewrite.assert_called_once()
 
 
+def test_matching_school_and_district_announcements_count_once(pipeline):
+    pipeline.feed.shared_announcements = "new-albany-schools"
+    caption = "Congratulations to Landon Evans on signing with Meridian Community College to continue his baseball career!"
+    assert pipeline.run(caption) == (1, 0, 0)
+    pipeline.feed.url = "https://example.org/district"
+    assert pipeline.run(caption, id="district-post", link="https://example.org/1") == (0, 1, 0)
+    assert pipeline.run(caption.replace("Landon Evans", "Parker Hicks"), id="other-athlete") == (1, 0, 0)
+    assert pipeline.store.get_processed_count() == 2
+
+
 @pytest.mark.parametrize("failure", [None, RuntimeError("generation unavailable")])
 def test_genuine_generation_failure_stays_error(pipeline, failure):
     if isinstance(failure, Exception):

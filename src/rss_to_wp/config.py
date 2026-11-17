@@ -21,6 +21,7 @@ class FeedConfig(BaseModel):
     default_tags: list[str] = Field(default_factory=list)
     max_per_run: int = 5
     use_original_title: bool = False
+    shared_announcements: Optional[str] = None
 
     @field_validator("url")
     @classmethod
