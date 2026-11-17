@@ -452,6 +452,7 @@ def process_entry(
 
     # Find image
     featured_media_id = None
+    image_result = None
 
     # Try RSS image first
     image_url = find_rss_image(entry, base_url=link or "")
