@@ -317,6 +317,11 @@ def process_feed(
                 skipped += 1
                 continue
 
+            evidence = get_entry_title(entry) + "\n" + source_text
+            hold_key = f"held:{entry_key}:{hashlib.sha256(evidence.encode()).hexdigest()}"
+            if dedupe_store.is_processed(hold_key):
+                skipped += 1
+                continue
             announcement_key = None
             if feed_config.shared_announcements and len(source_text.split()) >= 12:
                 published = parse_entry_date(entry)
@@ -343,6 +348,11 @@ def process_feed(
                 publisher=(getattr(feed, "feed", {}) or {}).get("title", ""),
             )
 
+            if result == {"skip": True}:
+                if not dry_run:
+                    dedupe_store.mark_processed(hold_key, feed_config.url, get_entry_title(entry), get_entry_link(entry) or "")
+                skipped += 1
+                continue
             if result:
                 if not dry_run:
                     dedupe_store.mark_processed(
@@ -419,6 +429,9 @@ def process_entry(
         **({"publisher": publisher} if publisher else {}),
     )
 
+    if rewritten == {"skip": True}:
+        logger.info("insufficient_news_for_publication", title=title[:80])
+        return rewritten
     if not rewritten:
         logger.error("rewrite_failed", title=title[:50])
         return None

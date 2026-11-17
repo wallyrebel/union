@@ -14,6 +14,26 @@ from rss_to_wp.source_content import clean_source_content
 from rss_to_wp.storage import DedupeStore
 
 
+def test_editorial_hold_skips_unchanged_source_and_rechecks_updated_copy(pipeline):
+    source = "The high school posts an invitation to follow its teams this week without listing a matchup."
+    article = pipeline.editor.rewrite.return_value
+    pipeline.editor.rewrite.return_value = {"skip": True}
+    assert pipeline.run(source) == (0, 1, 0)
+    assert pipeline.run(source) == (0, 1, 0)
+    assert pipeline.editor.rewrite.call_count == 1
+    pipeline.wp.create_post.assert_not_called()
+    pipeline.editor.rewrite.return_value = article
+    assert pipeline.run(source + " The school has now confirmed its Tuesday home game at 6 p.m.") == (1, 0, 0)
+    pipeline.wp.create_post.assert_called_once()
+
+
+def test_only_an_explicit_standalone_hold_skips_generation():
+    editor = object.__new__(OpenAIRewriter)
+    assert editor._parse_response('{"skip":true}') == {"skip": True}
+    assert editor._parse_response('{"skip":1}') is None
+    assert editor._parse_response('{"skip":true,"body":null}') is None
+
+
 @pytest.fixture
 def pipeline(tmp_path, monkeypatch):
     entries = []
