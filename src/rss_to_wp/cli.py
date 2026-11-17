@@ -261,7 +261,7 @@ def process_feed(
     # Filter entries
     entries = pick_entries(
         entries=feed.entries,
-        max_count=feed_config.max_per_run,
+        max_count=len(feed.entries),
         hours_window=hours,
         timezone=settings.timezone,
     )
@@ -272,7 +272,10 @@ def process_feed(
 
     logger.info("entries_to_process", name=feed_config.name, count=len(entries))
 
+    attempts = 0
     for entry in entries:
+        if attempts >= feed_config.max_per_run:
+            break
         try:
             # Generate unique key
             entry_key = generate_entry_key(entry, feed_config.url)
@@ -311,6 +314,7 @@ def process_feed(
                 continue
 
             # Process entry
+            attempts += 1
             result = process_entry(
                 entry=entry,
                 feed_config=feed_config,
@@ -319,18 +323,19 @@ def process_feed(
                 wp_client=wp_client,
                 dry_run=dry_run,
                 logger=logger,
+                publisher=(getattr(feed, "feed", {}) or {}).get("title", ""),
             )
 
             if result:
-                # Mark as processed
-                dedupe_store.mark_processed(
-                    entry_key=entry_key,
-                    feed_url=feed_config.url,
-                    entry_title=get_entry_title(entry),
-                    entry_link=get_entry_link(entry) or "",
-                    wp_post_id=result.get("id"),
-                    wp_post_url=result.get("link"),
-                )
+                if not dry_run:
+                    dedupe_store.mark_processed(
+                        entry_key=entry_key,
+                        feed_url=feed_config.url,
+                        entry_title=get_entry_title(entry),
+                        entry_link=get_entry_link(entry) or "",
+                        wp_post_id=result.get("id"),
+                        wp_post_url=result.get("link"),
+                    )
                 processed += 1
                 
                 # Track for email notification
@@ -366,6 +371,7 @@ def process_entry(
     wp_client: Optional[WordPressClient],
     dry_run: bool,
     logger,
+    publisher: str = "",
 ) -> Optional[dict]:
     """Process a single RSS entry.
 
@@ -390,6 +396,7 @@ def process_entry(
         content=content,
         original_title=title,
         use_original_title=feed_config.use_original_title,
+        **({"publisher": publisher} if publisher else {}),
     )
 
     if not rewritten:
