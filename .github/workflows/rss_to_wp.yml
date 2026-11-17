@@ -23,7 +23,13 @@ on:
         type: string
 
 env:
+  SINGLE_FEED: ${{ github.event.inputs.single_feed }}
+  DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
   PYTHON_VERSION: '3.11'
+
+concurrency:
+  group: union-rss-publisher
+  cancel-in-progress: false
 
 jobs:
   process-feeds:
@@ -81,21 +87,17 @@ jobs:
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
         run: |
-          ARGS="--config feeds.yaml"
-          
-          # Add dry-run flag if specified
-          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
-            ARGS="$ARGS --dry-run"
+          args=(--config feeds.yaml)
+          if [[ "$DRY_RUN" == true ]]; then
+            args+=(--dry-run)
           fi
-          
-          # Add single-feed flag if specified
-          if [ -n "${{ github.event.inputs.single_feed }}" ]; then
-            ARGS="$ARGS --single-feed '${{ github.event.inputs.single_feed }}'"
+          if [[ -n "$SINGLE_FEED" ]]; then
+            args+=(--single-feed "$SINGLE_FEED")
           fi
-          
-          python -m rss_to_wp run $ARGS
+          python -m rss_to_wp run "${args[@]}"
 
       - name: Save database to cache
+        if: env.DRY_RUN != 'true'
         uses: actions/cache/save@v4
         with:
           path: data/processed.db
@@ -106,8 +108,8 @@ jobs:
         run: |
           echo "## RSS to WordPress Run Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Dry Run**: ${{ github.event.inputs.dry_run || 'false' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Single Feed**: ${{ github.event.inputs.single_feed || 'All feeds' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dry Run**: $DRY_RUN" >> $GITHUB_STEP_SUMMARY
+          echo "- **Single Feed**: ${SINGLE_FEED:-All feeds}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ -f data/processed.db ]; then
