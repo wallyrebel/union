@@ -229,6 +229,8 @@ def run(
 
     # Only fail if nothing was processed AND nothing was skipped (complete failure)
     # Partial failures (some articles succeed, some fail) should not cause the run to fail
+    if total_errors:
+        typer.echo(f"::warning::Publisher recorded {total_errors} processing errors. See the per-feed results.")
     if total_errors > 0 and total_processed == 0 and total_skipped == 0:
         raise typer.Exit(1)
 
@@ -257,9 +259,12 @@ def process_feed(
 
     # Parse feed
     feed = parse_feed(feed_config.url)
-    if not feed or not feed.entries:
-        logger.warning("feed_empty_or_failed", name=feed_config.name)
+    if feed is None:
+        logger.error("feed_unavailable", name=feed_config.name)
         return (0, 0, 1)
+    if not feed.entries:
+        logger.info("feed_empty", name=feed_config.name)
+        return (0, 0, 0)
 
     # Filter entries
     entries = pick_entries(
