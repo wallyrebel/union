@@ -2,6 +2,11 @@
 # Generated: 2026-01-15
 
 feeds:
+  - name: "New Albany Street Department holiday garbage routes"
+    url: "https://www.visitnewalbany.com/streets-sanitation"
+    default_category: "Local News"
+    default_tags: ["New Albany"]
+    max_per_run: 1
   - name: "Union County Heritage Museum holiday calendar"
     url: "https://ucheritagemuseum.com/calendar/"
     default_category: "Local News"
