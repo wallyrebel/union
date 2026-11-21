@@ -9,6 +9,7 @@ import requests
 from feedparser.exceptions import CharacterEncodingOverride, NonXMLContentType
 
 from rss_to_wp.utils import get_logger
+from rss_to_wp.feeds.school_calendar import DISTRICT, district_calendar
 
 logger = get_logger("feeds.parser")
 
@@ -25,6 +26,8 @@ def parse_feed(url: str) -> Optional[dict[str, Any]]:
     logger.info("parsing_feed", url=url)
 
     try:
+        if url == DISTRICT:
+            return district_calendar()
         response = requests.get(url, timeout=(10, 30), headers={"User-Agent": feedparser.USER_AGENT})
         response.raise_for_status()
         headers = {key.lower(): value for key, value in response.headers.items()}

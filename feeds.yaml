@@ -2,6 +2,11 @@
 # Generated: 2026-01-15
 
 feeds:
+  - name: "Union County School District break and return calendar"
+    url: "https://www.union.k12.ms.us/"
+    default_category: "Local News"
+    default_tags: ["Union County School District"]
+    max_per_run: 1
   - name: "New Albany Schools newsroom"
     url: "https://www.newalbanyschools.us/feed/"
     default_category: "Local News"
