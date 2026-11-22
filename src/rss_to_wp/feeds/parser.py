@@ -9,6 +9,7 @@ import feedparser
 import requests
 from feedparser.exceptions import CharacterEncodingOverride, NonXMLContentType
 
+from rss_to_wp.feeds.golf import FEED as GOLF_FEED, local_golf
 from rss_to_wp.utils import get_logger
 from rss_to_wp.feeds.school_calendar import DISTRICT, district_calendar
 from rss_to_wp.feeds.museum import CALENDAR, ZONE, closure_notices
@@ -57,6 +58,9 @@ def parse_feed(url: str) -> Optional[dict[str, Any]]:
                 error=str(feed.bozo_exception),
             )
             # Continue anyway - feedparser often recovers
+
+        if url == GOLF_FEED:
+            return local_golf(feed, {"New Albany Bulldogs": "New Albany"})
 
         if not feed.entries:
             logger.info("feed_empty", url=url)
