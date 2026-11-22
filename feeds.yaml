@@ -2,10 +2,10 @@
 # Generated: 2026-01-15
 
 feeds:
-  - name: "New Albany state golf scorecards"
+  - name: "Union County state golf scorecards"
     url: "https://www.misshsaa.com/feed/"
     default_category: "Local News"
-    default_tags: ["New Albany Schools"]
+    use_original_title: true
     max_per_run: 3
   - name: "New Albany Street Department holiday garbage routes"
     url: "https://www.visitnewalbany.com/streets-sanitation"

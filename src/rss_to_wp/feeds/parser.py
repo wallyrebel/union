@@ -60,7 +60,10 @@ def parse_feed(url: str) -> Optional[dict[str, Any]]:
             # Continue anyway - feedparser often recovers
 
         if url == GOLF_FEED:
-            return local_golf(feed, {"New Albany Bulldogs": "New Albany"})
+            return local_golf(feed, {
+                "New Albany Bulldogs": "New Albany", "West Union Eagles": "West Union",
+                "Ingomar Falcons": "Ingomar", "Myrtle Hawks": "Myrtle", "East Union Urchins": "East Union",
+            })
 
         if not feed.entries:
             logger.info("feed_empty", url=url)

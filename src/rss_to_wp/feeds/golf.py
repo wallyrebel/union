@@ -11,6 +11,12 @@ from feedparser import FeedParserDict
 
 FEED = "https://www.misshsaa.com/feed/"
 ASSOCIATION = "Mississippi High School Activities Association"
+TIE_METHOD = re.compile(r"\b(?:play[ -]?off|tie[ -]?break(?:er)?|sudden[ -]death|count[ -]?back|extra holes?)\b", re.I)
+
+
+def unsupported_tie_method(source, article):
+    copy = " ".join(article.get(field, "") for field in ("headline", "body", "excerpt"))
+    return bool(TIE_METHOD.search(copy) and not TIE_METHOD.search(source))
 
 
 def scorecard(document, url, schools, release_date):
@@ -30,6 +36,7 @@ def scorecard(document, url, schools, release_date):
     _, event_name, _, competition_date, course, city = details
     team_results = []
     local_names = []
+    local_places = []
     for row in teams.parent.select("div > div"):
         cells = list(row.stripped_strings)
         if len(cells) != 4 or not valid_scores(cells):
@@ -37,6 +44,7 @@ def scorecard(document, url, schools, release_date):
         rank, name, rounds, total = cells
         if name in schools:
             local_names.append(name)
+            local_places.append((rank, total.split()[0]))
         team_results.append(f"{name}, place {rank}, rounds {rounds}, total {total}")
     if not local_names:
         return None
@@ -51,6 +59,12 @@ def scorecard(document, url, schools, release_date):
     if not player_results or not any(f", {schools[name]}, place " in row for name in local_names for row in player_results):
         return None
     headline = f"{' and '.join(local_names)} results at the {event_name}"
+    if len(local_names) == 1:
+        rank, strokes = local_places[0]
+        verb = "ties for" if rank.startswith("T") else "takes"
+        number = int(rank.lstrip("T"))
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(number % 10, "th") if number % 100 not in (11, 12, 13) else "th"
+        headline = f"{schools[local_names[0]]} {verb} {number}{suffix} at {event_name} with {strokes} strokes"
     notes = [
         f"MHSAA published the official results on {release_date:%B %d, %Y} for the {event_name}. "
         f"The scorecard lists the competition date as {competition_date} at {course} in {city}.",
