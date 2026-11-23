@@ -2,6 +2,11 @@
 # Generated: 2026-01-15
 
 feeds:
+  - name: "New Albany Main Street parade participant instructions"
+    url: "https://www.newalbanymainstreet.com/2026parade"
+    default_category: "Local News"
+    default_tags: ["New Albany"]
+    max_per_run: 1
   - name: "Union County state golf scorecards"
     url: "https://www.misshsaa.com/feed/"
     default_category: "Local News"

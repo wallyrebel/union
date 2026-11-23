@@ -14,6 +14,7 @@ from rss_to_wp.utils import get_logger
 from rss_to_wp.feeds.school_calendar import DISTRICT, district_calendar
 from rss_to_wp.feeds.museum import CALENDAR, ZONE, closure_notices
 from rss_to_wp.feeds.sanitation import STREETS, thanksgiving_routes
+from rss_to_wp.feeds.parade import PARADE, participant_instructions
 
 logger = get_logger("feeds.parser")
 
@@ -32,7 +33,9 @@ def parse_feed(url: str) -> Optional[dict[str, Any]]:
     try:
         if url == DISTRICT:
             return district_calendar()
-        local_calendars = {CALENDAR: closure_notices, STREETS: thanksgiving_routes}
+        if url == PARADE and (datetime.now(ZONE).year, datetime.now(ZONE).month) != (2026, 11):
+            return feedparser.FeedParserDict(entries=[], feed={})
+        local_calendars = {CALENDAR: closure_notices, STREETS: thanksgiving_routes, PARADE: participant_instructions}
         if url in local_calendars:
             response = requests.get(url, timeout=(5, 15), allow_redirects=False,
                                     headers={"Accept-Encoding": "gzip, deflate", "User-Agent": feedparser.USER_AGENT})
