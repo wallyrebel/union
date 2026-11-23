@@ -25,6 +25,7 @@ def test_empty_source_and_failed_fetch_have_different_results(monkeypatch, body,
 
 def test_editorially_accepted_story_with_no_optional_image(monkeypatch):
     editor, wp = Mock(), Mock()
+    wp.check_duplicate_by_source_url.return_value = False
     title = "Library moves Thursday meeting to the auditorium"
     body = "The public library moved Thursday's board meeting to the auditorium while repairs continue in its usual meeting room."
     editor.rewrite.return_value = {"headline": title, "body": "<p>" + body + "</p>"}

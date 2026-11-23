@@ -455,6 +455,10 @@ def process_entry(
         logger.info("golf_tie_method_unverified", title=title[:80])
         return {"skip": True}
 
+    if not dry_run and wp_client and link and wp_client.check_duplicate_by_source_url(link):
+        logger.info("entry_source_already_published", source_url=link)
+        return {"skip": True}
+
     # Find image
     featured_media_id = None
     image_result = None

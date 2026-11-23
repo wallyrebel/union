@@ -2,6 +2,11 @@
 # Generated: 2026-01-15
 
 feeds:
+  - name: "National Weather Service New Albany holiday travel forecast"
+    url: "https://api.weather.gov/gridpoints/MEG/81,39/forecast"
+    default_category: "Local News"
+    default_tags: ["New Albany weather"]
+    max_per_run: 1
   - name: "New Albany Main Street parade participant instructions"
     url: "https://www.newalbanymainstreet.com/2026parade"
     default_category: "Local News"

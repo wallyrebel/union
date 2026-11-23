@@ -15,6 +15,9 @@ from rss_to_wp.feeds.school_calendar import DISTRICT, district_calendar
 from rss_to_wp.feeds.museum import CALENDAR, ZONE, closure_notices
 from rss_to_wp.feeds.sanitation import STREETS, thanksgiving_routes
 from rss_to_wp.feeds.parade import PARADE, participant_instructions
+from rss_to_wp.feeds.holiday_forecast import travel_forecast
+
+FORECAST = "https://api.weather.gov/gridpoints/MEG/81,39/forecast"
 
 logger = get_logger("feeds.parser")
 
@@ -31,6 +34,8 @@ def parse_feed(url: str) -> Optional[dict[str, Any]]:
     logger.info("parsing_feed", url=url)
 
     try:
+        if url == FORECAST:
+            return travel_forecast(FORECAST, "New Albany", "https://forecast.weather.gov/MapClick.php?lat=34.49&lon=-89.01")
         if url == DISTRICT:
             return district_calendar()
         if url == PARADE and (datetime.now(ZONE).year, datetime.now(ZONE).month) != (2026, 11):

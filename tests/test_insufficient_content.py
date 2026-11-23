@@ -47,6 +47,7 @@ def pipeline(tmp_path, monkeypatch):
     editor = Mock()
     editor.rewrite.return_value = {"headline": "Verified headline", "body": "<p>Source story.</p>"}
     wp = Mock()
+    wp.check_duplicate_by_source_url.return_value = False
     wp.create_post.return_value = {"id": 42, "link": "https://example.com/story"}
     logger = Mock()
     feed = FeedConfig(name="News", url="https://example.com/feed")
@@ -263,6 +264,14 @@ def test_invalid_rewrite_is_error_before_images_wp_or_dedupe(pipeline, rewritten
     cli.find_rss_image.assert_not_called()
     assert pipeline.wp.mock_calls == []
     assert pipeline.store.get_processed_count() == 0
+
+
+def test_known_public_source_skips_before_image_upload(pipeline):
+    pipeline.wp.check_duplicate_by_source_url.return_value = True
+    assert pipeline.run("The city announced new collection hours for the holiday week.") == (0, 1, 0)
+    cli.find_rss_image.assert_not_called()
+    pipeline.wp.upload_media.assert_not_called()
+    pipeline.wp.create_post.assert_not_called()
 
 
 def test_direct_entry_caller_cannot_rewrite_platform_source(pipeline):
