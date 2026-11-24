@@ -5,7 +5,7 @@ feeds:
   - name: "Union County verified public records"
     url: "https://raw.githubusercontent.com/wallyrebel/MississippiNewsGroup/main/data/public-records/union.xml"
     default_category: "Local News"
-    default_tags: ["New Albany schools"]
+    default_tags: ["Union County"]
     max_per_run: 1
   - name: "National Weather Service New Albany holiday travel forecast"
     url: "https://api.weather.gov/gridpoints/MEG/81,39/forecast"
