@@ -1,0 +1,22 @@
+name: Restore the verified October figures to Union News post 5398
+on:
+  push:
+    branches: [editorial/nov24-union-labor-review]
+    paths: [scripts/nov24_labor_review.py]
+permissions:
+  contents: read
+concurrency:
+  group: union-rss-publisher
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m pip install requests
+      - name: Expand the verified original revision and check public text
+        env:
+          WORDPRESS_USERNAME: ${{ secrets.WORDPRESS_USERNAME }}
+          WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
+        run: python scripts/nov24_labor_review.py
