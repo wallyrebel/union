@@ -7,6 +7,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Optional
+from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 import typer
@@ -31,6 +32,7 @@ from rss_to_wp.feeds import (
 from rss_to_wp.feeds.golf import FEED as GOLF_FEED, unsupported_tie_method
 from rss_to_wp.images import download_image, find_fallback_image, find_rss_image
 from rss_to_wp.rewriter import OpenAIRewriter
+from rss_to_wp.recent_coverage import candidates
 from rss_to_wp.source_content import (
     MIN_SOURCE_LENGTH,
     clean_source_content,
@@ -458,6 +460,17 @@ def process_entry(
     if not dry_run and wp_client and link and wp_client.check_duplicate_by_source_url(link):
         logger.info("entry_source_already_published", source_url=link)
         return {"skip": True}
+
+    if not dry_run and wp_client and urlsplit(link or "").hostname in {
+        "facebook.com", "www.facebook.com", "m.facebook.com", "fb.watch",
+    }:
+        related = candidates(rewritten["headline"], rewritten["body"], wp_client.recent_public_posts())
+        if related:
+            matched = rewriter.covered_event(title, clean_source_content(content),
+                                            entry.get("published") or entry.get("updated"), related)
+            if matched:
+                logger.info("event_already_covered", existing_post_id=matched, source_url=link)
+                return {"skip": True}
 
     # Find image
     featured_media_id = None

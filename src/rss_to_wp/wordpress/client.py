@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 import time
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from urllib.parse import quote
 
@@ -49,6 +50,29 @@ class WordPressClient:
         self._category_cache: dict[str, int] = {}
         self._tag_cache: dict[str, int] = {}
         self._last_request_time = 0.0
+        self._recent_public_posts: Optional[list[dict]] = None
+
+    def recent_public_posts(self) -> list[dict]:
+        """Read the last three days once per edition, including earlier manual posts."""
+        if self._recent_public_posts is not None:
+            return self._recent_public_posts
+        records = []
+        after = datetime.now(timezone.utc) - timedelta(days=3)
+        page = 1
+        while True:
+            self._rate_limit()
+            response = self.session.get(self._api_url("posts"), params={
+                "status": "publish", "context": "view", "after": after.isoformat(),
+                "per_page": 100, "page": page, "orderby": "id", "order": "asc",
+                "_fields": "id,status,date_gmt,title,content",
+            }, timeout=(10, 30))
+            response.raise_for_status()
+            records.extend(response.json())
+            if page >= int(response.headers["X-WP-TotalPages"]):
+                break
+            page += 1
+        self._recent_public_posts = records
+        return records
 
     def _rate_limit(self) -> None:
         """Rate limit API calls."""
@@ -386,6 +410,8 @@ class WordPressClient:
             )
             response.raise_for_status()
             post = response.json()
+            # The next social item must see this post even within the same edition.
+            self._recent_public_posts = None
 
             logger.info(
                 "post_created",
