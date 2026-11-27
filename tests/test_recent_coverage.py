@@ -37,8 +37,9 @@ EXAMPLES = [
 
 def test_shortlist_finds_the_actual_reposts_and_excludes_private_text():
     private = dict(MARKER, id=123, status="private")
+    protected = dict(MARKER, id=124, content=dict(MARKER["content"], protected=True))
     for title, source, expected in EXAMPLES:
-        matches = candidates(title, source, [MARKER, SHOPPING, private])
+        matches = candidates(title, source, [MARKER, SHOPPING, private, protected])
         assert {p["id"] for p in matches} == {expected or 5417}
     assert candidates("City budgets", "Aldermen approved a street resurfacing contract.", [MARKER]) == []
 
@@ -50,10 +51,12 @@ def test_public_pagination_and_cache(monkeypatch):
     pages = [Mock(headers={"X-WP-TotalPages": "2"}) for _ in range(2)]
     for response, record in zip(pages, [MARKER, SHOPPING]):
         response.json.return_value = [record]
-    wp.session.get.side_effect = pages
+    public_get = Mock(side_effect=pages)
+    monkeypatch.setattr("rss_to_wp.wordpress.client.requests.get", public_get)
     assert wp.recent_public_posts() == wp.recent_public_posts() == [MARKER, SHOPPING]
-    assert [call.kwargs["params"]["page"] for call in wp.session.get.call_args_list] == [1, 2]
-    assert all(call.kwargs["params"]["status"] == "publish" for call in wp.session.get.call_args_list)
+    wp.session.get.assert_not_called()
+    assert [call.kwargs["params"]["page"] for call in public_get.call_args_list] == [1, 2]
+    assert all(call.kwargs["params"]["status"] == "publish" for call in public_get.call_args_list)
 
 
 @pytest.mark.parametrize("answer", [None, True, 9999, "5417"])

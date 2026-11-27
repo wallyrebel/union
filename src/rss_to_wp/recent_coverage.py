@@ -23,7 +23,7 @@ def candidates(title: str, body: str, recent: list[dict]) -> list[dict]:
     incoming = _terms(clean_source_content(title + " " + body))
     matches = []
     for post in recent:
-        if post["status"] != "publish":
+        if post["status"] != "publish" or post["content"].get("protected"):
             continue
         heading = clean_source_content(post["title"]["rendered"])
         article = clean_source_content(post["content"]["rendered"])

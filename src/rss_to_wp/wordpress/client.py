@@ -61,7 +61,8 @@ class WordPressClient:
         page = 1
         while True:
             self._rate_limit()
-            response = self.session.get(self._api_url("posts"), params={
+            # Model comparisons use only what a signed-out reader can access.
+            response = requests.get(self._api_url("posts"), params={
                 "status": "publish", "context": "view", "after": after.isoformat(),
                 "per_page": 100, "page": page, "orderby": "id", "order": "asc",
                 "_fields": "id,status,date_gmt,title,content",
